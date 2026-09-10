@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '../context/NavigationContext';
 import { ProcessCircleMotion } from '../components/ProcessCircleMotion';
 import { TestimonialCarousel } from '../components/TestimonialCarousel';
@@ -30,8 +30,49 @@ import {
 export const HomePage: React.FC = () => {
   const { openCalendly, navigate } = useNavigation();
 
-  // Active step for Section 6: How SalesNego Works
+  // Pathway 1: Hero Process Flow (Understand -> Build -> Execute -> Close -> Grow)
+  const heroSteps = ['Understand', 'Build', 'Execute', 'Close', 'Grow'];
+  const [heroStep, setHeroStep] = useState<number>(0);
+  const [isHeroPaused, setIsHeroPaused] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isHeroPaused) return;
+    const timer = setInterval(() => {
+      setHeroStep((prev) => (prev + 1) % heroSteps.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isHeroPaused, heroSteps.length]);
+
+  // Pathway 2: Challenge / Commercial Gap Flow (Right Market -> Right Accounts -> Right Conversations -> Qualified Opportunities -> Closed Business)
+  const gapSteps = [
+    'Right Market',
+    'Right Accounts',
+    'Right Conversations',
+    'Qualified Opportunities',
+    'Closed Business',
+  ];
+  const [gapStep, setGapStep] = useState<number>(0);
+  const [isGapPaused, setIsGapPaused] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isGapPaused) return;
+    const timer = setInterval(() => {
+      setGapStep((prev) => (prev + 1) % gapSteps.length);
+    }, 2200);
+    return () => clearInterval(timer);
+  }, [isGapPaused, gapSteps.length]);
+
+  // Pathway 3: Commercial Execution Journey in Section 6 (UNDERSTAND -> EXPAND)
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [isJourneyPaused, setIsJourneyPaused] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isJourneyPaused) return;
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % 8);
+    }, 2600);
+    return () => clearInterval(timer);
+  }, [isJourneyPaused]);
 
   // Contact Form State for Section 10
   const [contactForm, setContactForm] = useState({
@@ -205,28 +246,40 @@ export const HomePage: React.FC = () => {
 
           {/* Hero Visual: One Connected Commercial Journey */}
           <ScrollReveal delay={250} className="relative z-10 pt-8 mt-10 border-t border-slate-200/60 dark:border-slate-800">
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-sm shadow-xs">
+            <div
+              className="p-4 sm:p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 backdrop-blur-sm shadow-xs"
+              onMouseEnter={() => setIsHeroPaused(true)}
+              onMouseLeave={() => setIsHeroPaused(false)}
+            >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-transparent">
-                    Understand
-                  </span>
-                  <span className="text-[#EE2338]">→</span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-transparent">
-                    Build
-                  </span>
-                  <span className="text-[#EE2338]">→</span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-transparent">
-                    Execute
-                  </span>
-                  <span className="text-[#EE2338]">→</span>
-                  <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-transparent">
-                    Close
-                  </span>
-                  <span className="text-[#EE2338]">→</span>
-                  <span className="px-3 py-1 rounded-full bg-[#EE2338]/15 dark:bg-[#EE2338]/30 text-[#EE2338] dark:text-[#FF8585] border border-[#EE2338]/30 dark:border-[#EE2338]/40">
-                    Grow
-                  </span>
+                  {heroSteps.map((step, idx) => {
+                    const isActive = heroStep === idx;
+                    return (
+                      <React.Fragment key={step}>
+                        <button
+                          type="button"
+                          onClick={() => setHeroStep(idx)}
+                          className={`px-3 py-1 rounded-full transition-all duration-500 cursor-pointer ${
+                            isActive
+                              ? 'bg-[#EE2338] text-white shadow-md shadow-[#EE2338]/30 scale-105 border border-[#EE2338]'
+                              : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-white/10 hover:border-[#EE2338]/40'
+                          }`}
+                        >
+                          {step}
+                        </button>
+                        {idx < heroSteps.length - 1 && (
+                          <span
+                            className={`transition-all duration-300 font-bold ${
+                              isActive ? 'text-[#EE2338] scale-110' : 'text-[#EE2338]/60 dark:text-[#EE2338]/80'
+                            }`}
+                          >
+                            →
+                          </span>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
                 </div>
                 <p className="text-xs text-slate-500 dark:text-zinc-300 italic">
                   AI accelerates the workload. Human commercial judgment drives the outcome.
@@ -274,26 +327,38 @@ export const HomePage: React.FC = () => {
 
           {/* Simple Visual Pathway (Document Page 3) */}
           <ScrollReveal delay={150} className="mt-10 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#1C1B20] border border-[#E5E3DC] dark:border-white/10 shadow-xs">
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-[#161519] dark:text-white">
-              <span className="px-3 py-1.5 rounded-lg bg-[#F6F5F2] dark:bg-white/5 border border-[#E5E3DC] dark:border-white/10">
-                Right Market
-              </span>
-              <span className="text-[#EE2338]">→</span>
-              <span className="px-3 py-1.5 rounded-lg bg-[#F6F5F2] dark:bg-white/5 border border-[#E5E3DC] dark:border-white/10">
-                Right Accounts
-              </span>
-              <span className="text-[#EE2338]">→</span>
-              <span className="px-3 py-1.5 rounded-lg bg-[#F6F5F2] dark:bg-white/5 border border-[#E5E3DC] dark:border-white/10">
-                Right Conversations
-              </span>
-              <span className="text-[#EE2338]">→</span>
-              <span className="px-3 py-1.5 rounded-lg bg-[#F6F5F2] dark:bg-white/5 border border-[#E5E3DC] dark:border-white/10">
-                Qualified Opportunities
-              </span>
-              <span className="text-[#EE2338]">→</span>
-              <span className="px-3 py-1.5 rounded-lg bg-[#EE2338] text-white shadow-xs">
-                Closed Business
-              </span>
+            <div
+              className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-[#161519] dark:text-white"
+              onMouseEnter={() => setIsGapPaused(true)}
+              onMouseLeave={() => setIsGapPaused(false)}
+            >
+              {gapSteps.map((step, idx) => {
+                const isActive = gapStep === idx;
+                return (
+                  <React.Fragment key={step}>
+                    <button
+                      type="button"
+                      onClick={() => setGapStep(idx)}
+                      className={`px-3.5 py-1.5 rounded-lg transition-all duration-500 cursor-pointer ${
+                        isActive
+                          ? 'bg-[#EE2338] text-white shadow-md shadow-[#EE2338]/30 scale-105 border border-[#EE2338]'
+                          : 'bg-[#F6F5F2] dark:bg-white/5 text-[#555459] dark:text-zinc-300 border border-[#E5E3DC] dark:border-white/10 hover:border-[#EE2338]/40'
+                      }`}
+                    >
+                      {step}
+                    </button>
+                    {idx < gapSteps.length - 1 && (
+                      <span
+                        className={`transition-all duration-300 font-bold ${
+                          isActive ? 'text-[#EE2338] scale-110' : 'text-[#EE2338]/60 dark:text-[#EE2338]/80'
+                        }`}
+                      >
+                        →
+                      </span>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
           </ScrollReveal>
         </div>
@@ -643,29 +708,36 @@ export const HomePage: React.FC = () => {
 
           {/* Visual Pathway Tabs */}
           <ScrollReveal delay={120} className="p-6 sm:p-8 rounded-2xl bg-[#F6F5F2] dark:bg-[#1C1B20] border border-[#E5E3DC] dark:border-white/10 shadow-xs mb-8">
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              {commercialJourneySteps.map((step, idx) => (
-                <button
-                  key={step.stage}
-                  type="button"
-                  onClick={() => setActiveStep(idx)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                    activeStep === idx
-                      ? 'bg-[#EE2338] text-white shadow-xs'
-                      : 'bg-white dark:bg-[#121214] text-[#555459] dark:text-zinc-400 hover:text-[#161519] dark:hover:text-white border border-[#E5E3DC] dark:border-white/10'
-                  }`}
-                >
-                  {step.stage}
-                </button>
-              ))}
+            <div
+              className="flex flex-wrap items-center gap-2 mb-6"
+              onMouseEnter={() => setIsJourneyPaused(true)}
+              onMouseLeave={() => setIsJourneyPaused(false)}
+            >
+              {commercialJourneySteps.map((step, idx) => {
+                const isActive = activeStep === idx;
+                return (
+                  <button
+                    key={step.stage}
+                    type="button"
+                    onClick={() => setActiveStep(idx)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-500 cursor-pointer ${
+                      isActive
+                        ? 'bg-[#EE2338] text-white shadow-md shadow-[#EE2338]/30 scale-105 border border-[#EE2338]'
+                        : 'bg-white dark:bg-[#121214] text-[#555459] dark:text-zinc-400 hover:text-[#161519] dark:hover:text-white border border-[#E5E3DC] dark:border-white/10'
+                    }`}
+                  >
+                    {step.stage}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Active Stage Sentence (Document Page 8: show only one short sentence) */}
-            <div className="p-5 rounded-xl bg-white dark:bg-[#121214] border border-[#E5E3DC] dark:border-white/10">
+            <div className="p-5 rounded-xl bg-white dark:bg-[#121214] border border-[#E5E3DC] dark:border-white/10 transition-all duration-300">
               <span className="text-xs font-bold uppercase tracking-wider text-[#EE2338] block mb-1">
                 {commercialJourneySteps[activeStep].stage}
               </span>
-              <p className="text-base sm:text-lg font-medium text-[#161519] dark:text-white">
+              <p className="text-base sm:text-lg font-medium text-[#161519] dark:text-white transition-opacity duration-300">
                 {commercialJourneySteps[activeStep].sentence}
               </p>
             </div>
